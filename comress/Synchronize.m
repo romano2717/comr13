@@ -1566,8 +1566,9 @@
                 NSString *UnitNo = [rsAddres stringForColumn:@"unit_no"] ? [rsAddres stringForColumn:@"unit_no"] : @"";
                 NSString *SpecifyArea = [rsAddres stringForColumn:@"specify_area"] ? [rsAddres stringForColumn:@"specify_area"] : @"";
                 NSString *PostalCode = [rsAddres stringForColumn:@"postal_code"] ? [rsAddres stringForColumn:@"postal_code"] : @"";
+                NSNumber *BlkId = [NSNumber numberWithInt:[rsAddres intForColumn:@"block_id"]];
                 
-                NSDictionary *dictAd = @{@"ClientAddressId" : ClientAddressId, @"AddressId" : AddressId, @"Location" : Location , @"UnitNo" : UnitNo , @"SpecifyArea" : SpecifyArea, @"PostalCode": PostalCode };
+                NSDictionary *dictAd = @{@"ClientAddressId" : ClientAddressId, @"AddressId" : AddressId, @"Location" : Location , @"UnitNo" : UnitNo , @"SpecifyArea" : SpecifyArea, @"PostalCode": PostalCode,@"BlkId":BlkId };
                 
                 [addressArray addObject:dictAd];
             }
