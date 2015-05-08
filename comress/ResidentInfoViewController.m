@@ -453,7 +453,12 @@
     
     self.surveyAddressTxtFld.text = [NSString stringWithFormat:@"%@ %@",[[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"block_no"],[[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"street_name"]] ;
     self.residentAddressTxtFld.text = [NSString stringWithFormat:@"%@ %@",[[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"block_no"],[[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"street_name"]];
+    
     self.postalCode = [[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"postal_code"];
+    self.residentPostalCode = [[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"postal_code"];
+    
+    blockId = [[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"block_id"];
+    residentBlockId = [[foundPlacesArray objectAtIndex:rowNum] valueForKey:@"block_id"];
     
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
         [self validatePostalCode];
