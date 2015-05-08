@@ -42,7 +42,11 @@
     self.client_resident_address_id = [[surveyDict valueForKey:@"client_resident_address_id"] longLongValue];
     self.client_survey_address_id = [[surveyDict valueForKey:@"client_survey_address_id"] longLongValue];
     self.surveyAddressPostalCode = [surveyAddressDict valueForKey:@"postal_code"];
-    residentBlockId = [NSNumber numberWithInt:[[residentAddressDict valueForKey:@"block_id"] intValue]];
+    
+    residentBlockId = 0;
+    if([residentAddressDict valueForKey:@"block_id"] != [NSNull null])
+        residentBlockId = [NSNumber numberWithInt:[[residentAddressDict valueForKey:@"block_id"] intValue]];
+    
     self.residentAddressPostalCode = [residentAddressDict valueForKey:@"postal_code"];
 
     NSString *surveyAddress;
