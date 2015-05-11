@@ -23,6 +23,14 @@
     // Do any additional setup after loading the view.
     
     myDatabase = [Database sharedMyDbManager];
+    
+    //hide svc. ambass for CT_NU
+    if([[myDatabase.userDictionary valueForKey:@"group_name"] isEqualToString:@"CT_NU"] == YES)
+    {
+        NSMutableArray *tabbarViewControllers = [NSMutableArray arrayWithArray: [self viewControllers]];
+        [tabbarViewControllers removeObjectAtIndex: 1];
+        [self setViewControllers: tabbarViewControllers ];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated

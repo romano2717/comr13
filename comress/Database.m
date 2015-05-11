@@ -8,7 +8,7 @@
 
 #import "Database.h"
 
-static const int newDatabaseVersion = 2; //this database version is incremented everytime the database version is updated
+static const int newDatabaseVersion = 3; //this database version is incremented everytime the database version is updated
 
 @implementation Database
 
@@ -162,9 +162,12 @@ static const int newDatabaseVersion = 2; //this database version is incremented 
         //create the tables
         NSArray *tablesToCreate = @[
                                     //30-apr-2015: allow crm to add image
-                                    @"CREATE TABLE suv_crm_image (client_crm_image_id INTEGER PRIMARY KEY AUTOINCREMENT, crm_image_id INTEGER DEFAULT (0), client_crm_id INTEGER DEFAULT (0), crm_id INTEGER DEFAULT (0), image_path VARCHAR (300), uploaded BOOLEAN DEFAULT (0));",
+                                    @"CREATE TABLE IF NOT EXISTS suv_crm_image (client_crm_image_id INTEGER PRIMARY KEY AUTOINCREMENT, crm_image_id INTEGER DEFAULT (0), client_crm_id INTEGER DEFAULT (0), crm_id INTEGER DEFAULT (0), image_path VARCHAR (300), uploaded BOOLEAN DEFAULT (0));",
                                     //30-apr-2015: allow crm to save post information
-                                    @"CREATE TABLE suv_crm (client_crm_id INTEGER PRIMARY KEY AUTOINCREMENT, crm_id INTEGER DEFAULT (0), client_feed_back_issue_id INTEGER DEFAULT (0), feedback_issue_id INTEGER DEFAULT (0), description VARCHAR (300), postal_code VARCHAR (10), address VARCHAR (100), level VARCHAR (30), no_of_image INTEGER DEFAULT (0));"
+                                    @"CREATE TABLE IF NOT EXISTS suv_crm (client_crm_id INTEGER PRIMARY KEY AUTOINCREMENT, crm_id INTEGER DEFAULT (0), client_feed_back_issue_id INTEGER DEFAULT (0), feedback_issue_id INTEGER DEFAULT (0), description VARCHAR (300), postal_code VARCHAR (10), address VARCHAR (100), level VARCHAR (30), no_of_image INTEGER DEFAULT (0));",
+                                    
+                                    //11-may-2015 when PO close an issue, remarks and/or actions done is required
+                                    @"CREATE TABLE IF NOT EXISTS post_close_issue_remarks (id INTEGER PRIMARY KEY AUTOINCREMENT, actions_done VARCHAR (100), remarks VARCHAR (300), post_id INTEGER DEFAULT (0), uploaded INTEGER DEFAULT (0));"
                                     ];
         
         

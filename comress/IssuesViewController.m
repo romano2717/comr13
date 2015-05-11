@@ -20,7 +20,6 @@
 
 @end
 
-
 @implementation IssuesViewController
 
 - (void)viewDidLoad {
@@ -55,6 +54,10 @@
     
     //overdue issues indicator
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(thereAreOVerDueIssues:) name:@"thereAreOVerDueIssues" object:nil];
+    
+    //when PO close the issue
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeIssueActionSubmitFromList:) name:@"closeIssueActionSubmitFromList" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeCloseIssueActionSubmitFromList) name:@"closeCloseIssueActionSubmitFromList" object:nil];
 }
 
 - (void)thereAreOVerDueIssues:(NSNotification *)notif
@@ -93,8 +96,6 @@
 
 - (void)autoOpenChatViewForPostMe:(NSNotification *)notif
 {
-    [self.segment setSelectedSegmentIndex:0];
-    
     NSNumber *clientPostId = [NSNumber numberWithLongLong:[[[notif userInfo] valueForKey:@"lastClientPostId"] longLongValue]];
     
     [self performSegueWithIdentifier:@"push_chat_issues" sender:clientPostId];
@@ -102,8 +103,6 @@
 
 - (void)autoOpenChatViewForPostOthers:(NSNotification *)notif
 {
-    [self.segment setSelectedSegmentIndex:1];
-    
     NSNumber *clientPostId = [NSNumber numberWithLongLong:[[[notif userInfo] valueForKey:@"lastClientPostId"] longLongValue]];
     
     [self performSegueWithIdentifier:@"push_chat_issues" sender:clientPostId];
@@ -472,9 +471,7 @@
     {
         close = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Close" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
             
-            NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
-            [self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:4] withPostDict:dict];
-            [self fetchPostsWithNewIssuesUp:NO];
+            [self POwillCloseTheIssue:indexPath];
         }];
         close.backgroundColor = [UIColor darkGrayColor];
     }
@@ -482,7 +479,7 @@
     
     UITableViewRowAction *completed = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Completed" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
         
-        NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
+        //NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
         
         [self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:3] withPostDict:dict];
         [self fetchPostsWithNewIssuesUp:NO];
@@ -491,7 +488,7 @@
     
     UITableViewRowAction *start = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Start" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
         
-        NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
+        //NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
         
         [self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:1] withPostDict:dict];
         [self fetchPostsWithNewIssuesUp:NO];
@@ -500,7 +497,7 @@
     
     UITableViewRowAction *stop = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Stop" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
         
-        NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
+        //NSDictionary *dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
         
         [self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:2] withPostDict:dict];
         [self fetchPostsWithNewIssuesUp:NO];
@@ -531,8 +528,89 @@
             break;
     }
     
+    if([[myDatabase.userDictionary valueForKey:@"group_name"] isEqualToString:@"PO"])
+        return  @[start,stop, completed,close];
+    else if ([[myDatabase.userDictionary valueForKey:@"group_name"] isEqualToString:@"CT_NU"])
+        return  @[start,stop, completed];
+    else
+        return  @[start,stop, completed,close];
+}
 
-    return  @[start,stop, completed,close];
+- (void)POwillCloseTheIssue:(NSIndexPath *)indexPath
+{
+    CloseIssueActionViewController *closeIssueVc = [self.storyboard instantiateViewControllerWithIdentifier:@"CloseIssueActionViewController"];
+    closeIssueVc.indexPath = indexPath;
+    closeIssueVc.calledFromList = 1;
+    
+    MZFormSheetController *formSheet = [[MZFormSheetController alloc] initWithViewController:closeIssueVc];
+    
+    formSheet.presentedFormSheetSize = CGSizeMake(300, 400);
+    formSheet.shadowRadius = 2.0;
+    formSheet.shadowOpacity = 0.3;
+    formSheet.shouldDismissOnBackgroundViewTap = YES;
+    formSheet.shouldCenterVertically = YES;
+    formSheet.movementWhenKeyboardAppears = MZFormSheetWhenKeyboardAppearsCenterVertically;
+    
+    // If you want to animate status bar use this code
+    formSheet.didTapOnBackgroundViewCompletionHandler = ^(CGPoint location) {
+        
+    };
+    
+    formSheet.willPresentCompletionHandler = ^(UIViewController *presentedFSViewController) {
+        DDLogVerbose(@"will present");
+    };
+    formSheet.transitionStyle = MZFormSheetTransitionStyleCustom;
+    
+    [MZFormSheetController sharedBackgroundWindow].formSheetBackgroundWindowDelegate = self;
+    
+    [self mz_presentFormSheetController:formSheet animated:YES completionHandler:^(MZFormSheetController *formSheetController) {
+        DDLogVerbose(@"did present");
+    }];
+    
+    formSheet.willDismissCompletionHandler = ^(UIViewController *presentedFSViewController) {
+        DDLogVerbose(@"will dismiss");
+    };
+}
+
+- (void)closeIssueActionSubmitFromList:(NSNotification *)notif
+{
+    [self mz_dismissFormSheetControllerAnimated:YES completionHandler:nil];
+    
+    NSDictionary *notifDict = [notif userInfo];
+    NSIndexPath *indexPath = [notifDict objectForKey:@"indexPath"];
+    
+    //upload post status change
+    NSDictionary *dict;
+    if(self.segment.selectedSegmentIndex == 0)
+        dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
+    else if(self.segment.selectedSegmentIndex == 1)
+        dict = (NSDictionary *)[[self.postsArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    else
+        dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
+    
+    //close the issue
+    //[self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:4] withPostDict:dict];
+    //[self fetchPostsWithNewIssuesUp:NO];
+    
+    //save PO action
+    NSString *key = [[dict allKeys] objectAtIndex:0];
+    NSNumber *thePostId = [NSNumber numberWithInt:[[[[dict objectForKey:key] objectForKey:@"post"] valueForKey:@"post_id"] intValue]];
+    
+    NSDictionary *actionsDict = @{@"actions":[notif userInfo],@"post_id":thePostId};
+    BOOL issueActionBool =  [post setIssueCloseActionRemarks:actionsDict];
+    
+    if(issueActionBool)
+    {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            Synchronize *sync = [Synchronize sharedManager];
+            [sync uploadCloseIssueActionFromSelf:NO];
+        });
+    }
+}
+
+- (void)closeCloseIssueActionSubmitFromList
+{
+    [self mz_dismissFormSheetControllerAnimated:YES completionHandler:nil];
 }
 
 - (void)setPostStatusAtIndexPath:(NSIndexPath *)indexPath withStatus:(NSNumber *)clickedStatus withPostDict:(NSDictionary *)dict
@@ -590,8 +668,6 @@
     NSDictionary *dictCommentStatus = @{@"client_post_id":clickedPostId, @"text":statusString,@"senderId":user.user_id,@"date":date,@"messageType":@"text",@"comment_type":[NSNumber numberWithInt:2]};
     
     [comment saveCommentWithDict:dictCommentStatus];
-    
-    
 }
 
  // Override to support editing the table view.

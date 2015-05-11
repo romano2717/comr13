@@ -24,7 +24,7 @@
 #import "NavigationBarTitleWithSubtitleView.h"
 #import "MBProgressHUD.h"
 #import "Database.h"
-
+#import "CloseIssueActionViewController.h"
 @class IssuesChatViewController;
 
 @protocol IssuesChatViewControllerDelegate <NSObject>
@@ -56,6 +56,7 @@
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *actionButton;
 @property (nonatomic, strong) NSArray *commentsArray;
 @property (nonatomic, strong) NSNumber *theNewSelectedStatus;
+@property (nonatomic, strong) NSNumber *theNewSelectedStatusCopy;
 @property (nonatomic) BOOL isFiltered;
 
 - (void)selectedTableRow:(NSNotification *)notif; //when user select a status from the pop-up

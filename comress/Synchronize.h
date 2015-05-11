@@ -35,6 +35,7 @@
 @property (nonatomic) BOOL uploadSurveyFromSelfIsFinished;
 @property (nonatomic) BOOL uploadCrmFromSelfIsFinished;
 @property (nonatomic) BOOL uploadCrmImageFromSelfIsFinished;
+@property (nonatomic) BOOL uploadCloseIssueActionFromSelfIsFinished;
 
 + (id)sharedManager;
 
@@ -62,6 +63,8 @@
 - (void)uploadCrmFromSelf:(BOOL)thisSelf;
 
 - (void)uploadCrmImageFromSelf:(BOOL)thisSelf;
+
+- (void)uploadCloseIssueActionFromSelf:(BOOL)thisSelf;
 
 //download
 

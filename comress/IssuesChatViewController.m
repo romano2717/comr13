@@ -19,7 +19,7 @@
 
 @implementation IssuesChatViewController
 
-@synthesize postId,postDict,commentsArray,theNewSelectedStatus,isFiltered,ServerPostId;
+@synthesize postId,postDict,commentsArray,theNewSelectedStatus,isFiltered,ServerPostId,theNewSelectedStatusCopy;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -59,6 +59,10 @@
     
     //add watcher when user tapped a cell on this pop-up window
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedTableRow:) name:@"selectedTableRow" object:nil];
+    
+    //when PO close the issue
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeIssueActionSubmitFromChat:) name:@"closeIssueActionSubmitFromChat" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeCloseIssueActionSubmitFromChat) name:@"closeCloseIssueActionSubmitFromChat" object:nil];
 }
 
 - (void)fetchComments
@@ -183,30 +187,114 @@
             theNewSelectedStatus = [NSNumber numberWithInt:3];
             break;
             
-        case 4:
-            statusString = @"Issue set status Close";
-            theNewSelectedStatus = [NSNumber numberWithInt:4];
-            break;
-        
-        default:
+        case 0:
             statusString = @"Issue set status Pending";
             theNewSelectedStatus = [NSNumber numberWithInt:0];
             break;
     }
     
     
-    [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
-    NSDictionary *dict = @{@"client_post_id":[NSNumber numberWithInt:self.postId], @"text":statusString,@"senderId":user.user_id,@"date":date,@"messageType":@"text",@"comment_type":[NSNumber numberWithInt:2]};
+    if(rowNum != 4)
+    {
+        theNewSelectedStatusCopy = theNewSelectedStatus;
+        
+        NSDictionary *dict = @{@"client_post_id":[NSNumber numberWithInt:self.postId], @"text":statusString,@"senderId":user.user_id,@"date":date,@"messageType":@"text",@"comment_type":[NSNumber numberWithInt:2]};
+        
+        [self continueClosingTheIssueWithDict:dict statusRowNum:rowNum];
+    }
+    else
+    {
+        statusString = @"Issue set status Close";
+        theNewSelectedStatus = [NSNumber numberWithInt:4];
+        
+        [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
+            NSDictionary *dict = @{@"client_post_id":[NSNumber numberWithInt:self.postId], @"text":statusString,@"senderId":user.user_id,@"date":date,@"messageType":@"text",@"comment_type":[NSNumber numberWithInt:2]};
+            
+            [self POwillCloseTheIssueFromListWithDict:dict statusRowNum:rowNum];
+        }];
+    }
+}
+
+- (void)continueClosingTheIssueWithDict:(NSDictionary *)dict statusRowNum:(int)rowNum
+{
+    [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
     [self saveCommentForMessage:dict];
     
-    [post updatePostStatusForClientPostId:[NSNumber numberWithInt:self.postId] withStatus:[NSNumber numberWithInteger:rowNum]];
+    //[post updatePostStatusForClientPostId:[NSNumber numberWithInt:self.postId] withStatus:[NSNumber numberWithInteger:rowNum]];
     
     [self finishSendingMessageAnimated:YES];
     
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:nil];
 }
+
+
+- (void)POwillCloseTheIssueFromListWithDict:(NSDictionary *)dict statusRowNum:(int)rowNum
+{
+    CloseIssueActionViewController *closeIssueVc = [self.storyboard instantiateViewControllerWithIdentifier:@"CloseIssueActionViewController"];
+    closeIssueVc.rowNum = rowNum;
+    closeIssueVc.dict = dict;
+    closeIssueVc.calledFromList = 0;
+
+    MZFormSheetController *formSheet = [[MZFormSheetController alloc] initWithViewController:closeIssueVc];
+    
+    formSheet.presentedFormSheetSize = CGSizeMake(300, 400);
+    formSheet.shadowRadius = 2.0;
+    formSheet.shadowOpacity = 0.3;
+    formSheet.shouldDismissOnBackgroundViewTap = YES;
+    formSheet.shouldCenterVertically = YES;
+    formSheet.movementWhenKeyboardAppears = MZFormSheetWhenKeyboardAppearsCenterVertically;
+    
+    // If you want to animate status bar use this code
+    formSheet.didTapOnBackgroundViewCompletionHandler = ^(CGPoint location) {
+        
+    };
+    
+    formSheet.willPresentCompletionHandler = ^(UIViewController *presentedFSViewController) {
+        DDLogVerbose(@"will present");
+    };
+    formSheet.transitionStyle = MZFormSheetTransitionStyleCustom;
+    
+    [MZFormSheetController sharedBackgroundWindow].formSheetBackgroundWindowDelegate = self;
+    
+    [self mz_presentFormSheetController:formSheet animated:YES completionHandler:^(MZFormSheetController *formSheetController) {
+        DDLogVerbose(@"did present");
+    }];
+    
+    formSheet.willDismissCompletionHandler = ^(UIViewController *presentedFSViewController) {
+        DDLogVerbose(@"will dismiss");
+    };
+}
+
+- (void)closeIssueActionSubmitFromChat:(NSNotification *)notif
+{
+    [self mz_dismissFormSheetControllerAnimated:YES completionHandler:nil];
+    
+    NSDictionary *notifDict = [notif userInfo];
+
+    [self continueClosingTheIssueWithDict:[notifDict objectForKey:@"dict"] statusRowNum:[[notifDict valueForKey:@"rowNum"] intValue]];
+    
+    //save PO action
+    NSDictionary *actionsDict = @{@"actions":[notif userInfo],@"post_id":[NSNumber numberWithInt:self.postId]};
+    BOOL issueActionBool =  [post setIssueCloseActionRemarks:actionsDict];
+    
+    if(issueActionBool)
+    {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            Synchronize *sync = [Synchronize sharedManager];
+            [sync uploadCloseIssueActionFromSelf:NO];
+        });
+    }
+}
+
+- (void)closeCloseIssueActionSubmitFromChat
+{
+    theNewSelectedStatus = theNewSelectedStatusCopy;//reset the status to originial selection;
+    
+    [self mz_dismissFormSheetControllerAnimated:YES completionHandler:nil];
+}
+
 
 - (IBAction)postStatusActions:(id)sender
 {

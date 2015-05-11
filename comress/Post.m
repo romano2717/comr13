@@ -618,6 +618,29 @@ contract_type;
     }
 }
 
+- (BOOL)setIssueCloseActionRemarks:(NSDictionary *)dict
+{
+    __block BOOL flag = NO;
+    
+    [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        
+        NSString *actions_done = [[dict objectForKey:@"actions"] valueForKey:@"actionsTaken"];
+        NSString *remarks = [[dict objectForKey:@"actions"] valueForKey:@"remarks"];
+        
+        NSNumber *thePostId = [NSNumber numberWithInt:[[dict valueForKey:@"post_id"] intValue]];
+        
+        flag = [db executeUpdate:@"insert into post_close_issue_remarks (actions_done,remarks,post_id) values (?,?,?)",actions_done,remarks,thePostId];
+       
+        if(!flag)
+        {
+            *rollback = YES;
+            return;
+        }
+    }];
+    
+    return flag;
+}
+
 - (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
     NSUInteger unitFlags = NSCalendarUnitDay;
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];

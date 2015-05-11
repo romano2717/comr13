@@ -83,6 +83,7 @@
 		4D6424CA1AD3CF3800B6B974 /* mosquito@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D6424C61AD3CF3800B6B974 /* mosquito@2x.png */; };
 		4D6424CB1AD3CF3800B6B974 /* tree@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D6424C71AD3CF3800B6B974 /* tree@2x.png */; };
 		4D6424CC1AD3CF3800B6B974 /* wiping@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D6424C81AD3CF3800B6B974 /* wiping@2x.png */; };
+		4D68561C1B0057BF008D2A74 /* CloseIssueActionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D68561B1B0057BF008D2A74 /* CloseIssueActionViewController.m */; };
 		4D78EAA31AB6A21C006627C5 /* Check_list.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D78EAA21AB6A21C006627C5 /* Check_list.m */; };
 		4D81D4451AB6B96500A403C9 /* RouInitializerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D81D4441AB6B96500A403C9 /* RouInitializerViewController.m */; };
 		4D81D4481AB6CAF200A403C9 /* Check_area.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D81D4471AB6CAF200A403C9 /* Check_area.m */; };
@@ -403,6 +404,8 @@
 		4D6424C61AD3CF3800B6B974 /* mosquito@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mosquito@2x.png"; sourceTree = "<group>"; };
 		4D6424C71AD3CF3800B6B974 /* tree@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tree@2x.png"; sourceTree = "<group>"; };
 		4D6424C81AD3CF3800B6B974 /* wiping@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wiping@2x.png"; sourceTree = "<group>"; };
+		4D68561A1B0057BF008D2A74 /* CloseIssueActionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseIssueActionViewController.h; sourceTree = "<group>"; };
+		4D68561B1B0057BF008D2A74 /* CloseIssueActionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseIssueActionViewController.m; sourceTree = "<group>"; };
 		4D78EAA11AB6A21C006627C5 /* Check_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Check_list.h; sourceTree = "<group>"; };
 		4D78EAA21AB6A21C006627C5 /* Check_list.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Check_list.m; sourceTree = "<group>"; };
 		4D81D4431AB6B96500A403C9 /* RouInitializerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouInitializerViewController.h; sourceTree = "<group>"; };
@@ -1018,6 +1021,15 @@
 			name = Chat;
 			sourceTree = "<group>";
 		};
+		4D6856191B005767008D2A74 /* PO-Close Action */ = {
+			isa = PBXGroup;
+			children = (
+				4D68561A1B0057BF008D2A74 /* CloseIssueActionViewController.h */,
+				4D68561B1B0057BF008D2A74 /* CloseIssueActionViewController.m */,
+			);
+			name = "PO-Close Action";
+			sourceTree = "<group>";
+		};
 		4D78EAA01AB6A0C4006627C5 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -1584,6 +1596,7 @@
 		4DA41DF51A80805700184A18 /* Issues */ = {
 			isa = PBXGroup;
 			children = (
+				4D6856191B005767008D2A74 /* PO-Close Action */,
 				4D4CB5271A89D738008AFD00 /* Chat */,
 				4D4CB5261A89D722008AFD00 /* New */,
 				4D4CB5251A89D703008AFD00 /* Listing */,
@@ -2045,6 +2058,7 @@
 				4DA208011A79DA0A00C7E5C7 /* JSQMessagesToolbarContentView.m in Sources */,
 				4DD6FEAD1A884CFF00CBBE1D /* UIView+WebCacheOperation.m in Sources */,
 				4DA204131A79CC5B00C7E5C7 /* AFHTTPSessionManager.m in Sources */,
+				4D68561C1B0057BF008D2A74 /* CloseIssueActionViewController.m in Sources */,
 				4DA207E21A79DA0A00C7E5C7 /* JSQMessagesKeyboardController.m in Sources */,
 				4D81D4481AB6CAF200A403C9 /* Check_area.m in Sources */,
 				4DA207DF1A79DA0A00C7E5C7 /* UIDevice+JSQMessages.m in Sources */,

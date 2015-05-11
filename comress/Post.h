@@ -46,4 +46,6 @@
 
 -(NSArray *)fetchPostsForBlockId:(NSNumber *)blockId;
 
+- (BOOL)setIssueCloseActionRemarks:(NSDictionary *)dict;
+
 @end

@@ -14,9 +14,14 @@
 #import "Users.h"
 #import "Database.h"
 #import "MESegmentedControl.h"
+#import "CloseIssueActionViewController.h"
+#import "MZFormSheetController.h"
+#import "MZCustomTransition.h"
+#import "MZFormSheetSegue.h"
+#import "Synchronize.h"
 
 
-@interface IssuesViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,IssuesChatViewControllerDelegate>
+@interface IssuesViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,IssuesChatViewControllerDelegate,MZFormSheetBackgroundWindowDelegate>
 {
     Post *post;
     IssuesTableViewCell *issuesCell;
@@ -28,5 +33,6 @@
 @property (nonatomic, weak) IBOutlet UITableView *issuesTable;
 @property (nonatomic, weak) IBOutlet MESegmentedControl *segment;
 @property (nonatomic, weak) IBOutlet UIButton *bulbButton;
+
 
 @end

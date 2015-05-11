@@ -524,63 +524,52 @@
 {
     [self.view endEditing:YES];
     
-    if(self.selectedFeeBackTypeStringArr.count > 0)
+    BOOL onlyNoneIsSelectedDontCreateIssue = NO;
+    if([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:19]] && self.selectedFeeBackTypeArr.count == 1)
+        onlyNoneIsSelectedDontCreateIssue = YES;
+    
+    if(onlyNoneIsSelectedDontCreateIssue == YES)
     {
-        BOOL onlyNoneIsSelectedDontCreateIssue = NO;
-        if([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:19]] && self.selectedFeeBackTypeArr.count == 1)
-            onlyNoneIsSelectedDontCreateIssue = YES;
-        
-        if(onlyNoneIsSelectedDontCreateIssue == YES)
-        {
-            [self saveFeedBack];
-        }
-        else
-        {
-            BOOL allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = NO;
-            
-            if([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:6]] && [self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:7]])
-            {
-                allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = YES;
-            }
-            else if ([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:6]] && self.selectedFeeBackTypeArr.count == 1)
-            {
-                allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = YES;
-            }
-            
-            else if ([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:7]] && self.selectedFeeBackTypeArr.count == 1)
-            {
-                allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = YES;
-            }
-            
-            
-            //do we have post?
-            int postCounter = 0;
-            for (int i = 0; i < self.selectedFeeBackTypeArr.count; i++) {
-                NSNumber *postType = [self.selectedFeeBackTypeArr objectAtIndex:i];
-                
-                if([postType intValue] == 1 || [postType intValue] == 2 || [postType intValue] == 4)
-                {
-                    postCounter++;
-                }
-            }
-            
-            NSString *message;
-            
-            if(allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue == YES)
-                message = @"Save feedback and raise this issue(s)?";
-            else
-                message = [NSString stringWithFormat:@"Are you sure you want to create %d issues?",postCounter];
-                
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Feedback" message:message delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-            
-            [alert show];
-        }
+        [self saveFeedBack];
     }
     else
     {
-        NSString *message = @"Please select atleast one feedback related type.";
+        BOOL allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = NO;
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Feedback" message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Okay", nil];
+        if([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:6]] && [self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:7]])
+        {
+            allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = YES;
+        }
+        else if ([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:6]] && self.selectedFeeBackTypeArr.count == 1)
+        {
+            allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = YES;
+        }
+        
+        else if ([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:7]] && self.selectedFeeBackTypeArr.count == 1)
+        {
+            allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue = YES;
+        }
+        
+        
+        //do we have post?
+        int postCounter = 0;
+        for (int i = 0; i < self.selectedFeeBackTypeArr.count; i++) {
+            NSNumber *postType = [self.selectedFeeBackTypeArr objectAtIndex:i];
+            
+            if([postType intValue] == 1 || [postType intValue] == 2 || [postType intValue] == 4)
+            {
+                postCounter++;
+            }
+        }
+        
+        NSString *message;
+        
+        if(allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue == YES)
+            message = @"Save feedback and raise this issue(s)?";
+        else
+            message = [NSString stringWithFormat:@"Are you sure you want to create %d issues?",postCounter];
+            
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Feedback" message:message delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
         
         [alert show];
     }

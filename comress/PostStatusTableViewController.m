@@ -8,9 +8,12 @@
 
 #import "PostStatusTableViewController.h"
 #import "IssuesChatViewController.h"
+#import "Database.h"
 
 @interface PostStatusTableViewController ()
-
+{
+    Database *myDatabase;
+}
 @property (nonatomic, strong)NSArray *status;
 
 @end
@@ -22,7 +25,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.status = [NSArray arrayWithObjects:@"Pending",@"Start",@"Stop",@"Completed",@"Close", nil];
+    myDatabase = [Database sharedMyDbManager];
+    
+    if([[myDatabase.userDictionary valueForKey:@"group_name"] isEqualToString:@"PO"])
+        self.status = [NSArray arrayWithObjects:@"Pending",@"Start",@"Stop",@"Completed",@"Close", nil];
+    else if ([[myDatabase.userDictionary valueForKey:@"group_name"] isEqualToString:@"CT_NU"])
+        self.status = [NSArray arrayWithObjects:@"Pending",@"Start",@"Stop",@"Completed", nil];
+    else
+        self.status = [NSArray arrayWithObjects:@"Pending",@"Start",@"Stop",@"Completed",@"Close", nil];
+    
+
 }
 
 - (void)didReceiveMemoryWarning {
