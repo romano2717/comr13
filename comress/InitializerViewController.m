@@ -464,7 +464,7 @@
 
             
             [myDatabase.databaseQ inTransaction:^(FMDatabase *theDb, BOOL *rollback) {
-                theDb.traceExecution = YES;
+                theDb.traceExecution = NO;
                 
                 FMResultSet *rsCommentNotiCheck = [theDb executeQuery:@"select * from comment_noti where comment_id = ? and user_id = ? and post_id = ?",CommentId,UserId,PostId];
                 
@@ -1474,7 +1474,7 @@
             NSNumber *Status = [NSNumber numberWithInt:[[[FeedbackIssueList objectAtIndex:i] valueForKey:@"Status"] intValue]];
             
             [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-                db.traceExecution = YES;
+                db.traceExecution = NO;
                 
                 FMResultSet *rsCheckFi = [db executeQuery:@"select * from su_feedback_issue where feedback_issue_id = ?",FeedbackIssueId];
 

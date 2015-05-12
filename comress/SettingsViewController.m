@@ -102,7 +102,7 @@
         if([[dict valueForKey:@"Result"] intValue] == 1)
         {
             [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-                db.traceExecution = YES;
+                db.traceExecution = NO;
                 
                 //clear tables
                 NSArray *tableToDelete =

@@ -94,7 +94,7 @@ contract_type;
         return 0;
     
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
         NSNumber *postTypeRoutine = [NSNumber numberWithInt:2];
         
         FMResultSet *rs = [db executeQuery:@"select block_id, post_type from post where post_type = ? and block_id = ?",postTypeRoutine, blockId];
@@ -189,7 +189,7 @@ contract_type;
 
         
         [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            db.traceExecution = YES;
+            db.traceExecution = NO;
             FMResultSet *rsPost = [db executeQuery:q];
             
             while ([rsPost next]) {
@@ -450,7 +450,7 @@ contract_type;
     
     myDatabase = [Database sharedMyDbManager];
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
         //update this post as seen
         NSNumber *wasSeen = [NSNumber numberWithBool:YES];
 

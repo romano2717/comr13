@@ -269,7 +269,7 @@
     
     //clear ro_inspectionresult first
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
         //delete entry for same w_scheduleid and w_checklistid
         BOOL del = [db executeUpdate:@"delete from ro_inspectionresult where w_scheduleid = ?",tappedScheduleId];
        
@@ -327,7 +327,7 @@
     
     //clear ro_inspectionresult first
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
         //delete entry for same w_scheduleid and w_checklistid
         BOOL del = [db executeUpdate:@"delete from ro_inspectionresult where w_scheduleid = ?",tappedScheduleId];
         

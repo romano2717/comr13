@@ -88,7 +88,7 @@
 {
     //save this as new survey
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
         NSDate *now = [NSDate date];
         
         if(clientSurveyIdIncompleteSurvey == 0)

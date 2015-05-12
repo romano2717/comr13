@@ -851,7 +851,7 @@
             NSDate *SupChk          = [myDatabase createNSDateWithWcfDateString:[dictList valueForKey:@"SupChk"]];
             
             [myDatabase.databaseQ inTransaction:^(FMDatabase *theDb, BOOL *rollback) {
-                theDb.traceExecution = YES;
+                theDb.traceExecution = NO;
                 FMResultSet *rs = [theDb executeQuery:@"select w_scheduleid from ro_schedule where w_scheduleid = ?",ScheduleId];
                 
                 if([rs next] == NO)//does not exist

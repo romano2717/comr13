@@ -214,7 +214,7 @@
     __block BOOL ok = YES;
     
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
 
         NSDate *now = [NSDate date];
         
@@ -308,7 +308,7 @@
     __block BOOL ok = YES;
     
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        db.traceExecution = YES;
+        db.traceExecution = NO;
         
         NSDate *now = [NSDate date];
         

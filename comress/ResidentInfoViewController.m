@@ -293,7 +293,7 @@
     {
         //update survey as data_protection = 0;
         [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            db.traceExecution = YES;
+            db.traceExecution = NO;
             BOOL upSu = [db executeUpdate:@"update su_survey set data_protection = ? where client_survey_id = ?",[NSNumber numberWithInt:0],surveyId];
             if(!upSu)
             {
