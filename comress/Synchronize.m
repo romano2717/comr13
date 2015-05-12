@@ -1252,11 +1252,21 @@
 
                 NSNumber *ClientFeedbackIssueId = [NSNumber numberWithInt:[[[AckFeedbackIssueList objectAtIndex:i] valueForKey:@"ClientFeedbackIssueId"] intValue]];
                 NSNumber *FeedbackIssueId = [NSNumber numberWithInt:[[[AckFeedbackIssueList objectAtIndex:i] valueForKey:@"FeedbackIssueId"] intValue]];
+                
+                
                 BOOL upAns = [db executeUpdate:@"update su_feedback_issue set feedback_issue_id = ? where client_feedback_issue_id = ?",FeedbackIssueId,ClientFeedbackIssueId];
                 if(!upAns)
                 {
                     *rollback = YES;
                     massUpdateOk = NO;
+                    return;
+                }
+                
+                //update crm
+                BOOL upCrm = [db executeUpdate:@"update suv_crm set feedback_issue_id = ? where client_feed_back_issue_id = ?",FeedbackIssueId,ClientFeedbackIssueId];
+                if(!upCrm)
+                {
+                    *rollback = YES;
                     return;
                 }
             }
@@ -1278,14 +1288,6 @@
                 BOOL upFbI = [db executeUpdate:@"update su_feedback_issue set feedback_id = ? where client_feedback_id = ?",FeedbackId,ClientFeedbackId];
 
                 if(!upFbI)
-                {
-                    *rollback = YES;
-                    return;
-                }
-                
-                //update crm
-                BOOL upCrm = [db executeUpdate:@"update suv_crm set feedback_issue_id = ? where client_feed_back_issue_id = ?",FeedbackId,ClientFeedbackId];
-                if(!upCrm)
                 {
                     *rollback = YES;
                     return;
@@ -1351,11 +1353,15 @@
         NSMutableDictionary *crmDict = [[NSMutableDictionary alloc] init];
 
         
-        FMResultSet *rsCrm = [db executeQuery:@"select * from suv_crm where crm_id = ? and feedback_issue_id != ?",[NSNumber numberWithInt:0],[NSNumber numberWithInt:0]];
+        FMResultSet *rsCrm = [db executeQuery:@"select * from suv_crm where crm_id = ?",[NSNumber numberWithInt:0],[NSNumber numberWithInt:0]];
         
         NSMutableArray *crmIssuetList = [[NSMutableArray alloc] init];
         
         while ([rsCrm next]) {
+            
+            if([rsCrm intForColumn:@"feedback_issue_id"] == 0)
+                continue;
+            
             NSNumber *ClientCRMIssueId = [NSNumber numberWithInt:[rsCrm intForColumn:@"client_crm_id"]];
             NSString *Body = [rsCrm stringForColumn:@"description"] ? [rsCrm stringForColumn:@"description"] : @"";
             NSNumber *FeedbackIssueId = [NSNumber numberWithInt:[rsCrm intForColumn:@"feedback_issue_id"]];
@@ -1466,11 +1472,15 @@
         
         NSMutableDictionary *crmDict = [[NSMutableDictionary alloc] init];
         
-        FMResultSet *rsCrm = [db executeQuery:@"select * from suv_crm_image where crm_image_id = ? and image_path is not null",[NSNumber numberWithInt:0]];
+        FMResultSet *rsCrm = [db executeQuery:@"select * from suv_crm_image where crm_image_id = ? and image_path is not null",[NSNumber numberWithInt:0],[NSNumber numberWithInt:0]];
         
         NSMutableArray *crmImageList = [[NSMutableArray alloc] init];
         
         while ([rsCrm next]) {
+            
+            if([rsCrm intForColumn:@"crm_id"] == 0)
+                continue;
+            
             NSNumber *CilentCRMImageId = [NSNumber numberWithInt:[rsCrm intForColumn:@"client_crm_image_id"]];
             NSNumber *CRMId = [NSNumber numberWithInt:[rsCrm intForColumn:@"crm_id"]];
             

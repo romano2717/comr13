@@ -411,6 +411,8 @@
        
         NSNumber *contract_type_id = [selectedContractTypesArr objectAtIndex:i];
         
+        __block NSNumber *clientFeedbackIssueId = [NSNumber numberWithInt:0];
+        
         //save to su_feedback_issue
         [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
             
@@ -425,6 +427,8 @@
                     *rollback = YES;
                     return ;
                 }
+                else
+                    clientFeedbackIssueId = [NSNumber numberWithLongLong:[db lastInsertRowId]];
             }
             else if([contract_type_id intValue] == 7)
             {
@@ -435,13 +439,16 @@
                     *rollback = YES;
                     return ;
                 }
+                else
+                    clientFeedbackIssueId = [NSNumber numberWithLongLong:[db lastInsertRowId]];
             }
         }];
         
         if([contract_type_id intValue] == 6 || [contract_type_id intValue] == 7)
         {
             // create crm
-            NSDictionary *crmDict = @{@"postal_code":postal_code,@"location":location,@"post_topic":post_topic,@"severity":severity,@"block_id":blockId,@"photoArray":self.photoArrayFull};
+            NSDictionary *crmDict = @{@"postal_code":postal_code,@"location":location,@"post_topic":post_topic,@"severity":severity,@"block_id":blockId,@"photoArray":self.photoArrayFull,@"clientFeedbackIssueId":clientFeedbackIssueId};
+            
             [self createCrmWithDictionary:crmDict];
             
 
@@ -613,13 +620,14 @@
     NSString *level = [dict valueForKey:@"level"];
     NSString *post_topic = [dict valueForKey:@"post_topic"];
     NSArray *photosArray = [dict objectForKey:@"photoArray"];
+    NSNumber *clientFeedbackIssueId = [dict valueForKey:@"clientFeedbackIssueId"];
     
     __block NSNumber *clientCrmId = 0;
     
     //save crm
     [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
        
-        BOOL insCrm = [db executeUpdate:@"insert into suv_crm(client_feed_back_issue_id,description,postal_code,address,level,no_of_image) values (?,?,?,?,?,?)",feedBackId,post_topic,postal_code,location,level,[NSNumber numberWithUnsignedInteger:photosArray.count]];
+        BOOL insCrm = [db executeUpdate:@"insert into suv_crm(client_feed_back_issue_id,description,postal_code,address,level,no_of_image) values (?,?,?,?,?,?)",clientFeedbackIssueId,post_topic,postal_code,location,level,[NSNumber numberWithUnsignedInteger:photosArray.count]];
         
         if(!insCrm)
         {
