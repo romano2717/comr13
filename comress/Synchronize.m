@@ -1351,7 +1351,7 @@
         NSMutableDictionary *crmDict = [[NSMutableDictionary alloc] init];
 
         
-        FMResultSet *rsCrm = [db executeQuery:@"select * from suv_crm where crm_id = ?",[NSNumber numberWithInt:0]];
+        FMResultSet *rsCrm = [db executeQuery:@"select * from suv_crm where crm_id = ? and feedback_issue_id != ?",[NSNumber numberWithInt:0],[NSNumber numberWithInt:0]];
         
         NSMutableArray *crmIssuetList = [[NSMutableArray alloc] init];
         
