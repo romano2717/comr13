@@ -28,7 +28,6 @@
         self.uploadSurveyFromSelfIsFinished = YES;
         self.uploadCrmFromSelfIsFinished = YES;
         self.uploadCrmImageFromSelfIsFinished = YES;
-        self.uploadCloseIssueActionFromSelfIsFinished = YES;
     }
     return self;
 }
@@ -294,6 +293,13 @@
                         return;
                     }
                     
+                    BOOL qPostStatus = [theDb executeUpdate:@"update post_close_issue_remarks set post_id = ? where client_post_id = ?",postId, clientPostId];
+                    if(!qPostStatus)
+                    {
+                        *rollback = YES;
+                        return;
+                    }
+                    
                     
                     BOOL qFeedBackIssue = [theDb executeUpdate:@"update su_feedback_issue set post_id = ? where client_post_id = ?",postId, clientPostId];
                     if(!qFeedBackIssue)
@@ -500,13 +506,37 @@
         FMResultSet *rs = [db executeQuery:@"select * from post where statusWasUpdated = ? and post_id is not null",[NSNumber numberWithBool:YES]];
         
         NSMutableArray *posts = [[NSMutableArray alloc] init];
-
+        NSMutableArray *closedPosts = [[NSMutableArray alloc] init];
+        
         while([rs next])
         {
             NSNumber *postId = [NSNumber numberWithInt:[rs intForColumn:@"post_id"]];
             NSNumber *status = [NSNumber numberWithInt:[rs intForColumn:@"status"]];
+            int theStatus = [rs intForColumn:@"status"];
             
-            NSDictionary *postList = @{@"PostId":postId,@"ActionStatus":status};
+            NSDictionary *postList;
+            
+            if(theStatus == 4) //close
+            {
+                //get close action remarks
+                FMResultSet *rsCloseActionRemarks = [db executeQuery:@"select * from post_close_issue_remarks where post_id = ? and uploaded = ?",postId,[NSNumber numberWithInt:0]];
+                
+                NSString *ActionRemark = @"";
+                NSString *ActionTaken = @"";
+                
+                while ([rsCloseActionRemarks next]) {
+                    ActionRemark = [rsCloseActionRemarks stringForColumn:@"remarks"] ? [rsCloseActionRemarks stringForColumn:@"remarks"] : @"";
+                    ActionTaken = [rsCloseActionRemarks stringForColumn:@"actions_taken"] ? [rsCloseActionRemarks stringForColumn:@"actions_taken"] : @"";
+                }
+                
+                postList = @{@"PostId":postId,@"ActionStatus":status,@"ActionRemark":ActionRemark,@"ActionTaken":ActionTaken};
+                
+                //save the closed posts so we can update the 'uploaded' status after the request
+                [closedPosts addObject:postId];
+            }
+            else
+                postList = @{@"PostId":postId,@"ActionStatus":status};
+            
             
             [posts addObject:postList];
         }
@@ -551,6 +581,19 @@
                         *rollback = YES;
                         return;
                     }
+                    
+                    for (int cp = 0; cp < closedPosts.count; cp++) {
+                        NSNumber *closedPostId = [closedPosts objectAtIndex:cp];
+                       
+                        BOOL upPostStatClose = [db executeUpdate:@"update post_close_issue_remarks set uploaded = ? where post_id = ?",[NSNumber numberWithInt:1],closedPostId];
+                        
+                        if(!upPostStatClose)
+                        {
+                            *rollback = YES;
+                            return;
+                        }
+                    }
+                    
                 }
                 
                 if(thisSelf)
@@ -1413,7 +1456,7 @@
     if(!self.uploadCrmImageFromSelfIsFinished)
     {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self uploadCloseIssueActionFromSelf:YES];
+            [self uploadPostFromSelf:YES];
         });
         
         return;
@@ -1456,7 +1499,7 @@
             {
                 // call this faster
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self uploadCloseIssueActionFromSelf:YES];
+                    [self uploadPostFromSelf:YES];
                 });
             }
             
@@ -1498,7 +1541,7 @@
             {
                 // call this faster
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self uploadCloseIssueActionFromSelf:YES];
+                    [self uploadPostFromSelf:YES];
                 });
             }
             
@@ -1506,110 +1549,6 @@
             if(stop)return;
             
             self.uploadCrmImageFromSelfIsFinished = YES;
-            
-            DDLogVerbose(@"%@ [%@-%@]",error.localizedDescription,THIS_FILE,THIS_METHOD);
-            
-            if(thisSelf)
-            {
-                // call this faster
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(sync_interval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self uploadCloseIssueActionFromSelf:YES];
-                });
-            }
-        }];
-        
-    }];
-}
-
-- (void)uploadCloseIssueActionFromSelf:(BOOL)thisSelf
-{
-    if(myDatabase.initializingComplete == NO)
-        return;
-    
-    //temp, now wcf yet
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self uploadPostFromSelf:YES];
-    });
-    return;
-    //
-    
-    if(!self.uploadCloseIssueActionFromSelfIsFinished)
-    {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self uploadPostFromSelf:YES];
-        });
-        
-        return;
-    }
-    
-    [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        
-        NSMutableDictionary *crmDict = [[NSMutableDictionary alloc] init];
-        
-        FMResultSet *rsIssue = [db executeQuery:@"select * from post_close_issue_remarks where uploaded = ?",[NSNumber numberWithInt:0]];
-        
-        NSMutableArray *rsIssueList = [[NSMutableArray alloc] init];
-        
-        while ([rsIssue next]) {
-           //create dictionary here
-        }
-        
-        if(rsIssueList.count == 0)
-        {
-            if(thisSelf)
-            {
-                // call this faster
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self uploadPostFromSelf:YES];
-                });
-            }
-            
-            return;
-        }
-        
-        
-        [crmDict setObject:rsIssueList forKey:@"crmImageList"];
-        
-        self.uploadCloseIssueActionFromSelfIsFinished = NO;
-        
-        [myDatabase.AfManager POST:[NSString stringWithFormat:@"%@%@",myDatabase.api_url,api_upload_crm_image] parameters:crmDict success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            if(stop)return;
-            
-            self.uploadCloseIssueActionFromSelfIsFinished = YES;
-            
-            NSDictionary *topDict = (NSDictionary *)responseObject;
-            //do db stuff
-            
-            NSArray *AckCRMImageObj = [topDict objectForKey:@"AckCRMImageObj"];
-            
-            for (int i = 0; i < AckCRMImageObj.count; i++) {
-                NSDictionary *dict = [AckCRMImageObj objectAtIndex:i];
-                NSNumber *CilentCRMImageId = [NSNumber numberWithInt:[[dict valueForKey:@"CilentCRMImageId"] intValue]];
-                NSNumber *CRMImageId = [NSNumber numberWithInt:[[dict valueForKey:@"CRMImageId"] intValue]];
-                
-                [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
-                    BOOL upCrmImage = [db executeUpdate:@"update suv_crm_image set crm_image_id = ?, uploaded = ? where client_crm_image_id = ?",CRMImageId,[NSNumber numberWithInt:1],CilentCRMImageId];
-                    
-                    if(!upCrmImage)
-                    {
-                        *rollback = YES;
-                        return ;
-                    }
-                }];
-            }
-            
-            if(thisSelf)
-            {
-                // call this faster
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self uploadPostFromSelf:YES];
-                });
-            }
-            
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            if(stop)return;
-            
-            self.uploadCloseIssueActionFromSelfIsFinished = YES;
             
             DDLogVerbose(@"%@ [%@-%@]",error.localizedDescription,THIS_FILE,THIS_METHOD);
             

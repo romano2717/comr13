@@ -13,6 +13,8 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "AFHTTPSessionManager.h"
 #import <UIKit/UIKit.h>
+#import "ALAssetsLibrary+CustomPhotoAlbum.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @interface Database : NSObject
 {
@@ -31,6 +33,8 @@
 @property (nonatomic, strong) NSDictionary *clientDictionary;
 @property (nonatomic, strong) NSDictionary *userDictionary;
 @property (nonatomic, strong) NSDictionary *deviceTokenDictionary;
+
+@property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 
 + (instancetype)sharedMyDbManager;
 
@@ -55,6 +59,8 @@
 - (void)createDeviceToken;
 
 - (void)createClient;
+
+- (void)saveImageToComressAlbum:(UIImage *)image;
 
 
 @end

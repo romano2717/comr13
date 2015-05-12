@@ -84,6 +84,7 @@
 		4D6424CB1AD3CF3800B6B974 /* tree@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D6424C71AD3CF3800B6B974 /* tree@2x.png */; };
 		4D6424CC1AD3CF3800B6B974 /* wiping@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D6424C81AD3CF3800B6B974 /* wiping@2x.png */; };
 		4D68561C1B0057BF008D2A74 /* CloseIssueActionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D68561B1B0057BF008D2A74 /* CloseIssueActionViewController.m */; };
+		4D6856201B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D68561F1B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
 		4D78EAA31AB6A21C006627C5 /* Check_list.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D78EAA21AB6A21C006627C5 /* Check_list.m */; };
 		4D81D4451AB6B96500A403C9 /* RouInitializerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D81D4441AB6B96500A403C9 /* RouInitializerViewController.m */; };
 		4D81D4481AB6CAF200A403C9 /* Check_area.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D81D4471AB6CAF200A403C9 /* Check_area.m */; };
@@ -406,6 +407,8 @@
 		4D6424C81AD3CF3800B6B974 /* wiping@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wiping@2x.png"; sourceTree = "<group>"; };
 		4D68561A1B0057BF008D2A74 /* CloseIssueActionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseIssueActionViewController.h; sourceTree = "<group>"; };
 		4D68561B1B0057BF008D2A74 /* CloseIssueActionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseIssueActionViewController.m; sourceTree = "<group>"; };
+		4D68561E1B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+CustomPhotoAlbum.h"; sourceTree = "<group>"; };
+		4D68561F1B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+CustomPhotoAlbum.m"; sourceTree = "<group>"; };
 		4D78EAA11AB6A21C006627C5 /* Check_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Check_list.h; sourceTree = "<group>"; };
 		4D78EAA21AB6A21C006627C5 /* Check_list.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Check_list.m; sourceTree = "<group>"; };
 		4D81D4431AB6B96500A403C9 /* RouInitializerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouInitializerViewController.h; sourceTree = "<group>"; };
@@ -1030,6 +1033,15 @@
 			name = "PO-Close Action";
 			sourceTree = "<group>";
 		};
+		4D68561D1B01B543008D2A74 /* ALAsset */ = {
+			isa = PBXGroup;
+			children = (
+				4D68561E1B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.h */,
+				4D68561F1B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.m */,
+			);
+			name = ALAsset;
+			sourceTree = "<group>";
+		};
 		4D78EAA01AB6A0C4006627C5 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -1202,6 +1214,7 @@
 		4DA203EA1A79CC2B00C7E5C7 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
+				4D68561D1B01B543008D2A74 /* ALAsset */,
 				4D2496401AE64013008A786E /* mzform */,
 				4D85E6A51AD7831D00170D66 /* custom segment badge */,
 				4D337D511ACCD9B900F9C7AA /* shake animation */,
@@ -2042,6 +2055,7 @@
 				4DAEA6B41A834D7600A6EFBE /* NSDate+HumanizedTime.m in Sources */,
 				4D81D4561AB7CCAA00A403C9 /* Schedule.m in Sources */,
 				4D0C2F8F1A7B4CA2009E5E53 /* PostImage.m in Sources */,
+				4D6856201B01B555008D2A74 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,
 				4DE801BB1AD296B1008B0236 /* CreateIssueViewController.m in Sources */,
 				4DA207F51A79DA0A00C7E5C7 /* JSQMessagesCollectionView.m in Sources */,
 				4D07178D1AB00D420055191A /* MTBBarcodeScanner.m in Sources */,

@@ -626,10 +626,10 @@ contract_type;
         
         NSString *actions_done = [[dict objectForKey:@"actions"] valueForKey:@"actionsTaken"];
         NSString *remarks = [[dict objectForKey:@"actions"] valueForKey:@"remarks"];
-        
         NSNumber *thePostId = [NSNumber numberWithInt:[[dict valueForKey:@"post_id"] intValue]];
+        NSNumber *clientPostId = [NSNumber numberWithInt:[[dict valueForKey:@"client_post_id"] intValue]];
         
-        flag = [db executeUpdate:@"insert into post_close_issue_remarks (actions_done,remarks,post_id) values (?,?,?)",actions_done,remarks,thePostId];
+        flag = [db executeUpdate:@"insert into post_close_issue_remarks (actions_taken,remarks,post_id,client_post_id) values (?,?,?,?)",actions_done,remarks,thePostId,clientPostId];
        
         if(!flag)
         {

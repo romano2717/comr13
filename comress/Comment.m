@@ -95,6 +95,9 @@ comment_type
                 //resize the saved image
                 [imgOpts resizeImageAtPath:filePath];
                 
+                //save full image to comress album
+                [myDatabase saveImageToComressAlbum:image];
+                
                 long long lastClientCommentId = [theDb lastInsertRowId];
                 
                 BOOL qPostImage = [theDb executeUpdate:@"insert into post_image (client_post_id, client_comment_id,image_path,status,downloaded,image_type)values (?,?,?,?,?,?)",[NSNumber numberWithInt:[[dict valueForKey:@"client_post_id"] intValue]],[NSNumber numberWithLongLong:lastClientCommentId],imageFileName,@"new",@"yes",[NSNumber numberWithInt:2]];

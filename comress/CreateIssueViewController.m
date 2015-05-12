@@ -527,6 +527,9 @@
                 //resize the saved image
                 [imgOpts resizeImageAtPath:filePath];
                 
+                //save full image to comress album
+                [myDatabase saveImageToComressAlbum:image];
+                
                 //save images to db
                 [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
                     

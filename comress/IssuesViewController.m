@@ -588,24 +588,28 @@
     else
         dict = (NSDictionary *)[self.postsArray objectAtIndex:indexPath.row];
     
-    //close the issue
-    //[self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:4] withPostDict:dict];
-    //[self fetchPostsWithNewIssuesUp:NO];
-    
     //save PO action
     NSString *key = [[dict allKeys] objectAtIndex:0];
-    NSNumber *thePostId = [NSNumber numberWithInt:[[[[dict objectForKey:key] objectForKey:@"post"] valueForKey:@"post_id"] intValue]];
     
-    NSDictionary *actionsDict = @{@"actions":[notif userInfo],@"post_id":thePostId};
+    NSNumber *thePostId = [NSNumber numberWithInt:0];
+    if([[[dict objectForKey:key] objectForKey:@"post"] valueForKey:@"post_id"] != [NSNull null])
+        thePostId = [NSNumber numberWithInt:[[[[dict objectForKey:key] objectForKey:@"post"] valueForKey:@"post_id"] intValue]];
+    
+    NSNumber *clientPostId = [NSNumber numberWithInt:[[[dict allKeys] objectAtIndex:0] intValue]];
+    NSDictionary *actionsDict = @{@"actions":[notif userInfo],@"post_id":thePostId,@"client_post_id":clientPostId};
     BOOL issueActionBool =  [post setIssueCloseActionRemarks:actionsDict];
     
     if(issueActionBool)
     {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             Synchronize *sync = [Synchronize sharedManager];
-            [sync uploadCloseIssueActionFromSelf:NO];
+            [sync uploadPostStatusChangeFromSelf:NO];
         });
     }
+    
+    //close the issue
+    [self setPostStatusAtIndexPath:indexPath withStatus:[NSNumber numberWithInt:4] withPostDict:dict];
+    [self fetchPostsWithNewIssuesUp:NO];
 }
 
 - (void)closeCloseIssueActionSubmitFromList

@@ -222,7 +222,7 @@
     
     [self saveCommentForMessage:dict];
     
-    //[post updatePostStatusForClientPostId:[NSNumber numberWithInt:self.postId] withStatus:[NSNumber numberWithInteger:rowNum]];
+    [post updatePostStatusForClientPostId:[NSNumber numberWithInt:self.postId] withStatus:[NSNumber numberWithInteger:rowNum]];
     
     [self finishSendingMessageAnimated:YES];
     
@@ -273,19 +273,25 @@
     
     NSDictionary *notifDict = [notif userInfo];
 
-    [self continueClosingTheIssueWithDict:[notifDict objectForKey:@"dict"] statusRowNum:[[notifDict valueForKey:@"rowNum"] intValue]];
-    
     //save PO action
-    NSDictionary *actionsDict = @{@"actions":[notif userInfo],@"post_id":[NSNumber numberWithInt:self.postId]};
+    NSNumber *thePostId = [NSNumber numberWithInt:0];
+    if([[self.postInfoDict objectForKey:@"post"] valueForKey:@"post_id"] != [NSNull null])
+        thePostId = [NSNumber numberWithInt:[[[self.postInfoDict objectForKey:@"post"] valueForKey:@"post_id"] intValue]];
+    
+    NSNumber *clientPostId = [NSNumber numberWithInt:postId];
+    NSDictionary *actionsDict = @{@"actions":[notif userInfo],@"post_id":thePostId,@"client_post_id":clientPostId};
     BOOL issueActionBool =  [post setIssueCloseActionRemarks:actionsDict];
     
     if(issueActionBool)
     {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             Synchronize *sync = [Synchronize sharedManager];
-            [sync uploadCloseIssueActionFromSelf:NO];
+            [sync uploadPostStatusChangeFromSelf:NO];
         });
     }
+    
+    //close the issue
+    [self continueClosingTheIssueWithDict:[notifDict objectForKey:@"dict"] statusRowNum:[[notifDict valueForKey:@"rowNum"] intValue]];
 }
 
 - (void)closeCloseIssueActionSubmitFromChat

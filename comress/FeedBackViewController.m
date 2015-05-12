@@ -525,7 +525,7 @@
     [self.view endEditing:YES];
     
     BOOL onlyNoneIsSelectedDontCreateIssue = NO;
-    if([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:19]] && self.selectedFeeBackTypeArr.count == 1)
+    if(self.selectedFeeBackTypeArr.count == 0)
         onlyNoneIsSelectedDontCreateIssue = YES;
     
     if(onlyNoneIsSelectedDontCreateIssue == YES)
@@ -686,7 +686,7 @@
         
         
         BOOL onlyNoneIsSelectedDontCreateIssue = NO;
-        if([self.selectedFeeBackTypeArr containsObject:[NSNumber numberWithInt:19]] && self.selectedFeeBackTypeArr.count == 1)
+        if(self.selectedFeeBackTypeArr.count == 0)
             onlyNoneIsSelectedDontCreateIssue = YES;
         
         if(allAreCrmDontCreateIssuAndInsertDirectylyToFeedbackIssue)

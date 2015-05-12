@@ -415,6 +415,9 @@
             //save the image info to local db
             NSNumber *lastClientPostIdID = [NSNumber numberWithLongLong:lastClientPostId];
             
+            //save full image to comress album
+            [myDatabase saveImageToComressAlbum:image];
+            
             //save images to db
             [myDatabase.databaseQ inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 

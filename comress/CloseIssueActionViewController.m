@@ -77,7 +77,11 @@
     
     for (int i = 0; i < self.selectedActionsArray.count; i++) {
         int selectedActionsIndex = [[self.selectedActionsArray objectAtIndex:i] intValue] - 1;
-        [actionsString appendString:[NSString stringWithFormat:@"%@,",[self.actions objectAtIndex:selectedActionsIndex]]];
+        
+        if(i == self.selectedActionsArray.count - 1) //last object
+            [actionsString appendString:[NSString stringWithFormat:@"%@",[self.actions objectAtIndex:selectedActionsIndex]]];
+        else
+            [actionsString appendString:[NSString stringWithFormat:@"%@, ",[self.actions objectAtIndex:selectedActionsIndex]]];
     }
     
     

@@ -167,7 +167,7 @@ static const int newDatabaseVersion = 3; //this database version is incremented 
                                     @"CREATE TABLE IF NOT EXISTS suv_crm (client_crm_id INTEGER PRIMARY KEY AUTOINCREMENT, crm_id INTEGER DEFAULT (0), client_feed_back_issue_id INTEGER DEFAULT (0), feedback_issue_id INTEGER DEFAULT (0), description VARCHAR (300), postal_code VARCHAR (10), address VARCHAR (100), level VARCHAR (30), no_of_image INTEGER DEFAULT (0));",
                                     
                                     //11-may-2015 when PO close an issue, remarks and/or actions done is required
-                                    @"CREATE TABLE IF NOT EXISTS post_close_issue_remarks (id INTEGER PRIMARY KEY AUTOINCREMENT, actions_done VARCHAR (100), remarks VARCHAR (300), post_id INTEGER DEFAULT (0), uploaded INTEGER DEFAULT (0));"
+                                    @"CREATE TABLE post_close_issue_remarks (id INTEGER PRIMARY KEY AUTOINCREMENT, actions_taken VARCHAR (100), remarks VARCHAR (300), post_id INTEGER DEFAULT (0), uploaded INTEGER DEFAULT (0), client_post_id INTEGER DEFAULT (0));"
                                     ];
         
         
@@ -177,7 +177,7 @@ static const int newDatabaseVersion = 3; //this database version is incremented 
             
             for (int i = 0; i < tablesToCreate.count; i++) {
                 BOOL create = [db executeUpdate:[tablesToCreate objectAtIndex:i]];
-                
+
                 if(!create)
                 {
                     *rollback = YES;
@@ -261,6 +261,17 @@ static const int newDatabaseVersion = 3; //this database version is incremented 
     }
     
     return jsonString;
+}
+
+- (void)saveImageToComressAlbum:(UIImage *)image
+{
+    self.assetsLibrary = [[ALAssetsLibrary alloc] init];
+    
+    [self.assetsLibrary saveImage:image toAlbum:@"COMRESS" completion:^(NSURL *assetURL, NSError *error) {
+        DDLogVerbose(@"Image saved");
+    } failure:^(NSError *error) {
+        DDLogVerbose(@"ERROR saving image to comress album: %@",error);
+    }];
 }
 
 
